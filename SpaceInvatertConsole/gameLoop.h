@@ -36,8 +36,8 @@ public:
 	void removeEnemyinVector(Enemy* inEnemy);
 	bool allDead();
 	void moveEnemy();
-	int atEdge();
-	void enemyAttack();
+	bool atEdge();
+	void enemyAttack(int ajustValue);
 
 
 private:

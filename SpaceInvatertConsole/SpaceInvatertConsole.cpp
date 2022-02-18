@@ -14,7 +14,6 @@
 
 int main()
 {
-
     Game newGame;
     //newGame.testGameLoop();
     newGame.mainGameLoop(4);

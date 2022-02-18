@@ -9,5 +9,9 @@ class Player : public Entity
 public:
 	Player();
 	Bullet* shoot();
+	bool reciveDamage();
+private:
+	int hitPoints;
+
 };
 #endif // !PLAYER_H

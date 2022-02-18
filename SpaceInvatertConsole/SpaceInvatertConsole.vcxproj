@@ -156,7 +156,6 @@
     <ClInclude Include="gameGrid.h" />
     <ClInclude Include="bullet.h" />
     <ClInclude Include="gameLoop.h" />
-    <ClInclude Include="Header.h" />
     <ClInclude Include="timer.h" />
     <ClInclude Include="setting.h" />
     <ClInclude Include="player.h" />

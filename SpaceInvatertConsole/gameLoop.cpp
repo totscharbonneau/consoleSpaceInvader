@@ -14,6 +14,7 @@ void Game::mainGameLoop(int lvl)
     char key;
     int value = 0;
     int b=1;
+    int battack = 1;
 
     for (int i = 0; i < lvl; i++) {
         Sleep(500);
@@ -25,11 +26,16 @@ void Game::mainGameLoop(int lvl)
         {
             updateAllBullets();
             updaterender();
-            if (b++ % 5 == 0) {
+            if (b % 15 == 0) {
                 moveEnemy();
                 b = 1;
             }
-            
+            if (battack % 5 == 0) {
+                enemyAttack(75);
+                battack = 1;
+            }
+            b++;
+            battack++;
         });
 
     trender.setSingleShot(false);
@@ -73,7 +79,7 @@ void Game::mainGameLoop(int lvl)
                 //liveEnemy[0][0]->shoot();
                 /*liveBullets.push_back(liveEnemy[0][0]->shoot());
                 gameGrid1.addEntity(liveBullets.back());*/
-                //enemyAttack();
+                enemyAttack(75);
                 //moveEnemy();
 
                
@@ -195,7 +201,7 @@ bool Game::allDead()
 void Game::moveEnemy()
 {
     int edge = atEdge();
-    if (edge == 0) {
+    if (edge) {
         for (int j = 0; j < liveEnemy.size(); j++) {
             for (int i = 0; i < enemyPerLine; i++) {
                 if (liveEnemy[j][i] != nullptr) {
@@ -215,37 +221,42 @@ void Game::moveEnemy()
     }
 }
 
-int Game::atEdge()
+bool Game::atEdge()
 {
-    for (int j = 0; j < liveEnemy.size(); j++) {
+    if (dirEnemy) {
+        for (int i = enemyPerLine - 1; i >= 0; i--) {
+            for (int j = 0; j < liveEnemy.size(); j++) {
+                if (liveEnemy[j][i] != nullptr) {
+                    if (liveEnemy[j][i]->x() == grandeurGrid - 1) {
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
+                }
+            }
+        }
+    }
+    else {
         for (int i = 0; i < enemyPerLine; i++) {
-            if (liveEnemy[j][i] != nullptr) {
-                if (dirEnemy) {
-                    if ( 3 >= grandeurGrid - 1 - 3 * (enemyPerLine - 1 - i) - liveEnemy[j][i]->x()) {
-                        return (grandeurGrid - 1 - 3 * (enemyPerLine - 1 - i) - liveEnemy[j][i]->x());
+            for (int j = 0; j < liveEnemy.size(); j++) {
+                if (liveEnemy[j][i] != nullptr) {
+                    if (liveEnemy[j][i]->x() == 0) {
+                        return true;
                     }
                     else {
-                        return -1;
+                        return false;
                     }
                 }
-                else {
-                    if (liveEnemy[j][i]->x() == 2 * i) {
-                        return 0;
-                    }
-                    else {
-                        return -1;
-                    }
-                }
-
             }
         }
     }
 }
 
-void Game::enemyAttack()
+void Game::enemyAttack(int ajustValue)
 {
     //int v1 = rand() % 100;
-    if (rand() % 100 + 50 != 100) return;
+    if (rand() % 100 + ajustValue <= 100) return;
     int shootyBoi = rand() % enemyPerLine;
     for (int j = liveEnemy.size() - 1; j >= 0; j--) {
         if (liveEnemy[j][shootyBoi] != nullptr) {
