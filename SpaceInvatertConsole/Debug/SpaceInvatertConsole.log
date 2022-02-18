@@ -1,0 +1,12 @@
+﻿  gameLoop.cpp
+C:\Users\Mrsko\source\repos\SpaceInvatertConsoleTry2\SpaceInvatertConsole\gameLoop.cpp(101,10): warning C4101: 'key': unreferenced local variable
+C:\Users\Mrsko\source\repos\SpaceInvatertConsoleTry2\SpaceInvatertConsole\gameLoop.cpp(149,23): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Mrsko\source\repos\SpaceInvatertConsoleTry2\SpaceInvatertConsole\gameLoop.cpp(159,23): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Mrsko\source\repos\SpaceInvatertConsoleTry2\SpaceInvatertConsole\gameLoop.cpp(168,23): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Mrsko\source\repos\SpaceInvatertConsoleTry2\SpaceInvatertConsole\gameLoop.cpp(184,23): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Mrsko\source\repos\SpaceInvatertConsoleTry2\SpaceInvatertConsole\gameLoop.cpp(199,27): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Mrsko\source\repos\SpaceInvatertConsoleTry2\SpaceInvatertConsole\gameLoop.cpp(209,23): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Mrsko\source\repos\SpaceInvatertConsoleTry2\SpaceInvatertConsole\gameLoop.cpp(220,23): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Mrsko\source\repos\SpaceInvatertConsoleTry2\SpaceInvatertConsole\gameLoop.cpp(145): warning C4715: 'Game::updateBullet': not all control paths return a value
+C:\Users\Mrsko\source\repos\SpaceInvatertConsoleTry2\SpaceInvatertConsole\gameLoop.cpp(243): warning C4715: 'Game::atEdge': not all control paths return a value
+  SpaceInvatertConsole.vcxproj -> C:\Users\Mrsko\source\repos\SpaceInvatertConsoleTry2\Debug\SpaceInvatertConsole.exe

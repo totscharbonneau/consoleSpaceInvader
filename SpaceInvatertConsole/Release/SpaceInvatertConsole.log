@@ -1,0 +1,10 @@
+﻿  void.cpp
+  entity.cpp
+  gameGrid.cpp
+  player.cpp
+  SpaceInvatertConsole.cpp
+  Generating code
+  Previous IPDB not found, fall back to full compilation.
+  All 22 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  SpaceInvatertConsole.vcxproj -> C:\Users\Mrsko\source\repos\SpaceInvatertConsoleTry2\Release\SpaceInvatertConsole.exe
