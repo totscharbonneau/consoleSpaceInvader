@@ -20,6 +20,9 @@
 #define KEY_X 120
 #define KEY_Y 121
 #define KEY_SPACE 32
+#define TYPE_ENEMY 151
+#define TYPE_VOID 150
+#define TYPE_PROJECTILE 152
 
 class Game {
 public:
@@ -38,6 +41,7 @@ public:
 	void moveEnemy();
 	bool atEdge();
 	void enemyAttack(int ajustValue);
+	void removeBullet(int index, Bullet* inbullet = nullptr);
 
 
 private:

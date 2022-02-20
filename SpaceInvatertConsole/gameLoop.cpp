@@ -70,9 +70,9 @@ void Game::mainGameLoop(int lvl)
                 gameGrid1.moveEntity(&player1, 1, 0);
                 break;
             case KEY_SPACE:
-                recentBullet = player1.shoot();
-                gameGrid1.addEntity(recentBullet);
-                liveBullets.push_back(recentBullet);
+                liveBullets.push_back(player1.shoot());
+                gameGrid1.addEntity(liveBullets.back());
+
                 //std::cout << "space" << std::endl;
                 break;
             case KEY_Y:
@@ -122,43 +122,70 @@ void Game::testGameLoop()
 
 bool Game::updateBullet(Bullet& inBullet)
 {   
-    if (inBullet.getWay()) {
-        
-        if (inBullet.y() == 0) { // bullet touche au haut
-            return false;
-        }
-        else if (gameGrid1.checkGrid(inBullet.x(), inBullet.y()-1) == nullptr) {
-            gameGrid1.moveEntity(&inBullet, 0, -1);
+    if (inBullet.y() == 0|| inBullet.y() == grandeurGrid -1) { // bullet touche au haut ou le bas
+        removeBullet(NULL, &inBullet);
             return true;
-        }
-        else if(gameGrid1.checkGrid(inBullet.x(), inBullet.y() - 1)->getType() == "enemy") {
-            //(Enemy*) gameGrid1.checkGrid(inBullet.x(), inBullet.y() - 1);
-            removeEnemyinVector((Enemy*)(gameGrid1.checkGrid(inBullet.x(), inBullet.y() - 1)));
-            gameGrid1.setEmplty(inBullet.x(), inBullet.y() - 1,false);
-            return false;
-        }
     }
-    else
-    {
-        if (inBullet.y() == grandeurGrid - 1) { // bullet touche au bas
-            return false;
-        }
-        else if (gameGrid1.checkGrid(inBullet.x(), inBullet.y() + 1) == nullptr) {
-            gameGrid1.moveEntity(&inBullet, 0, +1);
-            return true;
-        }
+    Entity* nextSpotptr = gameGrid1.checkGrid(inBullet.x(), inBullet.y() + (1 - (2 * inBullet.getWay())));
+    int nextSpot;
+    if (nextSpotptr == nullptr) {
+        nextSpot = TYPE_VOID;
     }
+    else if (nextSpotptr->getType() == "enemy") {
+        nextSpot = TYPE_ENEMY;
+    }
+    else if (nextSpotptr->getType() == "bullet") { //rajouter des conditions si nouveau type de projectile
+        nextSpot = TYPE_PROJECTILE;
+    }
+
+    switch (nextSpot) {
+    case TYPE_VOID:
+        gameGrid1.moveEntity(&inBullet, 0, (1 - (2 * inBullet.getWay())));
+        return true;
+    case TYPE_ENEMY:
+        removeEnemyinVector((Enemy*)nextSpotptr);
+        gameGrid1.setEmplty(inBullet.x(), inBullet.y() + (1 - (2 * inBullet.getWay())), false);
+        return false;
+    case TYPE_PROJECTILE:
+        removeBullet(NULL,(Bullet*)nextSpotptr);
+        removeBullet(NULL, &inBullet);
+        return true;
+    }
+    //if (inBullet.getWay()) {
+    //    
+    //    
+
+    //    else if (gameGrid1.checkGrid(inBullet.x(), inBullet.y()-1) == nullptr) {
+    //        gameGrid1.moveEntity(&inBullet, 0, -1);
+    //        return true;
+    //    }
+    //    else if(gameGrid1.checkGrid(inBullet.x(), inBullet.y() - 1)->getType() == "enemy") {
+    //        //(Enemy*) gameGrid1.checkGrid(inBullet.x(), inBullet.y() - 1);
+    //        removeEnemyinVector((Enemy*)(gameGrid1.checkGrid(inBullet.x(), inBullet.y() - 1)));
+    //        gameGrid1.setEmplty(inBullet.x(), inBullet.y() - 1,false);
+    //        return false;
+    //    }
+    //}
+    //else
+    //{
+    //    if (inBullet.y() == grandeurGrid - 1) { // bullet touche au bas
+    //        return false;
+    //    }
+    //    else if (gameGrid1.checkGrid(inBullet.x(), inBullet.y() + 1) == nullptr) {
+    //        gameGrid1.moveEntity(&inBullet, 0, +1);
+    //        return true;
+    //    }
+    //}
 }
 
 void Game::updateAllBullets()
 {
     for (int i = 0; i < liveBullets.size(); i++) {
         if (updateBullet(*liveBullets[i]) == false) {
-            gameGrid1.setEmplty(liveBullets[i]->x(), liveBullets[i]->y());
-            liveBullets.erase(liveBullets.begin() + i);
+            removeBullet(i);
         }
     }
-}
+} 
 
 void Game::addEnemies()
 {
@@ -265,6 +292,20 @@ void Game::enemyAttack(int ajustValue)
             return;
         }
     }
+}
+
+void Game::removeBullet(int index, Bullet* inbullet)
+{
+    if (inbullet != nullptr) {
+        for (int i = 0; i < liveBullets.size(); i++) {
+            if (liveBullets[i] == inbullet) {
+                index = i;
+                break;
+            }
+        }
+    }
+    gameGrid1.setEmplty(liveBullets[index]->x(), liveBullets[index]->y());
+    liveBullets.erase(liveBullets.begin() + index);
 }
 
 
