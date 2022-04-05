@@ -6,11 +6,13 @@
 #include "player.h"
 #include <conio.h>
 #include <windows.h>
-#include "timer.h"
+#include "timer2.h"
 #include "bullet.h"
 #include <vector>
 #include "enemy.h"
 #include <algorithm>
+#include "shield.h"
+
 
 
 #define KEY_UP 72
@@ -20,10 +22,13 @@
 #define KEY_X 120
 #define KEY_Y 121
 #define KEY_SPACE 32
+#define KEY_PLUS 61
+#define KEY_MOINS 45
 #define TYPE_ENEMY 151
 #define TYPE_VOID 150
 #define TYPE_PROJECTILE 152
 #define TYPE_PLAYER 153
+#define TYPE_SHIELD 154
 
 class Game {
 public:
@@ -43,7 +48,8 @@ public:
 	bool atEdge();
 	void enemyAttack(int ajustValue);
 	void removeBullet(int index, Bullet* inbullet = nullptr);
-
+	bool changeLogicRate(bool sens);
+	void addShield(int inX, int inY, int length, int hight);
 
 private:
 	std::vector<Bullet*> liveBullets;
@@ -54,6 +60,7 @@ private:
 	bool dirEnemy; // 1 = droite/ 2 = gauche
 	bool playerAlowedtoShoot;
 	bool gameOver;
+	float logicRate;
 };
 #endif // !GAMELOOP_H
 

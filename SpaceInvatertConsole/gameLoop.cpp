@@ -9,6 +9,7 @@ Game::Game()
     dirEnemy = true;
     playerAlowedtoShoot = true;
     gameOver = false;
+    logicRate = 0.153f;
 }
 
 void Game::mainGameLoop(int lvl)
@@ -24,9 +25,21 @@ void Game::mainGameLoop(int lvl)
         addEnemies();
     }
 
-    Timer trender([&]()
-        {
+    addShield(4, 33, 3, 2);
+    addShield(13, 33, 3, 2);
+    addShield(24, 33, 3, 2);
+    addShield(33, 33, 3, 2);
+
+    Timer* timerupdatelogic = Timer::Instance();
+
+    while (value != KEY_X) {
+        
+        timerupdatelogic->Tick();
+
+         if (timerupdatelogic->DeltaTime() >= logicRate) {
+            timerupdatelogic->reset();
             updateAllBullets();
+
             if (b % 15 == 0) {
                 moveEnemy();
                 b = 1;
@@ -37,16 +50,7 @@ void Game::mainGameLoop(int lvl)
             }
             b++;
             battack++;
-            updaterender();
-        });
-
-    trender.setSingleShot(false);
-    trender.setInterval(Timer::Interval(30));
-    trender.start(true);
-
-
-
-    while (value != KEY_X) {
+        }
 
         if (allDead()) {
             break;
@@ -82,19 +86,23 @@ void Game::mainGameLoop(int lvl)
                 }  
                 break;
             case KEY_Y:
-                //liveEnemy[0][0]->shoot();
-                /*liveBullets.push_back(liveEnemy[0][0]->shoot());
-                gameGrid1.addEntity(liveBullets.back());*/
-                enemyAttack(75);
-                //moveEnemy();
-
                
+                break;
+            case KEY_PLUS:
+                
+                changeLogicRate(true);
+                
+                break;
+            case KEY_MOINS:
+                changeLogicRate(false);
                 break;
             }
         }
+        updaterender();
     }
     ClearScreen();
-    trender.stop();
+    //trender.stop();
+    //tupdate.stop();
     if (gameOver) {
         std::cout << "Game Over" << std::endl;
     }
@@ -153,6 +161,9 @@ bool Game::updateBullet(Bullet& inBullet)
     else if (nextSpotptr->getType() == "player") {
         nextSpot = TYPE_PLAYER;
     }
+    else if (nextSpotptr->getType() == "shield") {
+        nextSpot = TYPE_SHIELD;
+    }
 
     switch (nextSpot) {
     case TYPE_VOID:
@@ -172,7 +183,11 @@ bool Game::updateBullet(Bullet& inBullet)
             gameOver = true;
         }
         removeBullet(NULL, &inBullet);
+    case TYPE_SHIELD:
+        gameGrid1.setEmplty(inBullet.x(), inBullet.y() + (1 - (2 * inBullet.getWay())), false);
+        removeBullet(NULL, &inBullet);
     }
+
 }
 
 void Game::updateAllBullets()
@@ -309,5 +324,28 @@ void Game::removeBullet(int index, Bullet* inbullet)
     gameGrid1.setEmplty(liveBullets[index]->x(), liveBullets[index]->y());
     liveBullets.erase(liveBullets.begin() + index);
 }
+
+bool Game::changeLogicRate(bool sens)
+{
+    if (sens) {
+        logicRate -= 0.01f;
+    }
+    else {
+        logicRate += 0.01f;
+    }
+    return true;
+}
+
+void Game::addShield(int inX, int inY, int length, int hight)
+{
+    if ((inX >= 0 && inX + length < grandeurGrid) && (inY >= 0 && inY+hight < grandeurGrid)) {
+        for (int x = inX; x < inX + length; x++) {
+            for (int y = inY; y < inY + hight; y++) {
+                gameGrid1.addEntity(new Shield(x,y));
+            }
+       }
+    }
+}
+
 
 
