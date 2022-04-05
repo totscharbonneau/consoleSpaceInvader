@@ -1,0 +1,11 @@
+﻿  gameLoop.cpp
+C:\Users\Mrsko\source\repos\consoleSpaceInvader\SpaceInvatertConsole\gameLoop.cpp(120,10): warning C4101: 'key': unreferenced local variable
+C:\Users\Mrsko\source\repos\consoleSpaceInvader\SpaceInvatertConsole\gameLoop.cpp(285,5): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Mrsko\source\repos\consoleSpaceInvader\SpaceInvatertConsole\gameLoop.h(66,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Mrsko\source\repos\consoleSpaceInvader\SpaceInvatertConsole\gameLoop.cpp(23): message : see reference to function template instantiation 'void Game::createEnemyLine<Enemy>(void)' being compiled
+  Generating code
+  1 of 435 functions ( 0.2%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    1 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  SpaceInvatertConsole.vcxproj -> C:\Users\Mrsko\source\repos\consoleSpaceInvader\x64\Release\SpaceInvatertConsole.exe

@@ -23,6 +23,7 @@
 #define TYPE_ENEMY 151
 #define TYPE_VOID 150
 #define TYPE_PROJECTILE 152
+#define TYPE_PLAYER 153
 
 class Game {
 public:
@@ -51,6 +52,8 @@ private:
 	Player player1;
 	Bullet* recentBullet;
 	bool dirEnemy; // 1 = droite/ 2 = gauche
+	bool playerAlowedtoShoot;
+	bool gameOver;
 };
 #endif // !GAMELOOP_H
 

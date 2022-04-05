@@ -1,8 +1,8 @@
 ﻿  gameLoop.cpp
-C:\Users\Mrsko\source\repos\consoleSpaceInvader\SpaceInvatertConsole\gameLoop.cpp(107,10): warning C4101: 'key': unreferenced local variable
-C:\Users\Mrsko\source\repos\consoleSpaceInvader\SpaceInvatertConsole\gameLoop.cpp(288,5): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\Mrsko\source\repos\consoleSpaceInvader\SpaceInvatertConsole\gameLoop.h(63,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\Mrsko\source\repos\consoleSpaceInvader\SpaceInvatertConsole\gameLoop.cpp(21): message : see reference to function template instantiation 'void Game::createEnemyLine<Enemy>(void)' being compiled
-C:\Users\Mrsko\source\repos\consoleSpaceInvader\SpaceInvatertConsole\gameLoop.cpp(179): warning C4715: 'Game::updateBullet': not all control paths return a value
-C:\Users\Mrsko\source\repos\consoleSpaceInvader\SpaceInvatertConsole\gameLoop.cpp(281): warning C4715: 'Game::atEdge': not all control paths return a value
+C:\Users\Mrsko\source\repos\consoleSpaceInvader\SpaceInvatertConsole\gameLoop.cpp(120,10): warning C4101: 'key': unreferenced local variable
+C:\Users\Mrsko\source\repos\consoleSpaceInvader\SpaceInvatertConsole\gameLoop.cpp(285,5): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Mrsko\source\repos\consoleSpaceInvader\SpaceInvatertConsole\gameLoop.h(66,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Mrsko\source\repos\consoleSpaceInvader\SpaceInvatertConsole\gameLoop.cpp(23): message : see reference to function template instantiation 'void Game::createEnemyLine<Enemy>(void)' being compiled
+C:\Users\Mrsko\source\repos\consoleSpaceInvader\SpaceInvatertConsole\gameLoop.cpp(176): warning C4715: 'Game::updateBullet': not all control paths return a value
+C:\Users\Mrsko\source\repos\consoleSpaceInvader\SpaceInvatertConsole\gameLoop.cpp(278): warning C4715: 'Game::atEdge': not all control paths return a value
   SpaceInvatertConsole.vcxproj -> C:\Users\Mrsko\source\repos\consoleSpaceInvader\x64\Debug\SpaceInvatertConsole.exe

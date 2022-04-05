@@ -7,6 +7,8 @@ Game::Game()
     gameGrid1.addEntity(&player1);
     Bullet* recentBullet = nullptr;
     dirEnemy = true;
+    playerAlowedtoShoot = true;
+    gameOver = false;
 }
 
 void Game::mainGameLoop(int lvl)
@@ -25,7 +27,6 @@ void Game::mainGameLoop(int lvl)
     Timer trender([&]()
         {
             updateAllBullets();
-            updaterender();
             if (b % 15 == 0) {
                 moveEnemy();
                 b = 1;
@@ -36,6 +37,7 @@ void Game::mainGameLoop(int lvl)
             }
             b++;
             battack++;
+            updaterender();
         });
 
     trender.setSingleShot(false);
@@ -49,7 +51,9 @@ void Game::mainGameLoop(int lvl)
         if (allDead()) {
             break;
         }
-
+        if (gameOver) {
+            break;
+        }
         if (_kbhit()) {
             key = _getch();
             value = key;
@@ -70,10 +74,12 @@ void Game::mainGameLoop(int lvl)
                 gameGrid1.moveEntity(&player1, 1, 0);
                 break;
             case KEY_SPACE:
-                liveBullets.push_back(player1.shoot());
-                gameGrid1.addEntity(liveBullets.back());
-
-                //std::cout << "space" << std::endl;
+                if (playerAlowedtoShoot) {
+                    recentBullet = player1.shoot();
+                    liveBullets.push_back(recentBullet);
+                    gameGrid1.addEntity(liveBullets.back());
+                    playerAlowedtoShoot = false;
+                }  
                 break;
             case KEY_Y:
                 //liveEnemy[0][0]->shoot();
@@ -87,7 +93,14 @@ void Game::mainGameLoop(int lvl)
             }
         }
     }
+    ClearScreen();
     trender.stop();
+    if (gameOver) {
+        std::cout << "Game Over" << std::endl;
+    }
+    else {
+        std::cout << "Victoire" << std::endl;
+    }
 }
 
 void Game::ClearScreen()
@@ -137,6 +150,9 @@ bool Game::updateBullet(Bullet& inBullet)
     else if (nextSpotptr->getType() == "bullet") { //rajouter des conditions si nouveau type de projectile
         nextSpot = TYPE_PROJECTILE;
     }
+    else if (nextSpotptr->getType() == "player") {
+        nextSpot = TYPE_PLAYER;
+    }
 
     switch (nextSpot) {
     case TYPE_VOID:
@@ -145,37 +161,18 @@ bool Game::updateBullet(Bullet& inBullet)
     case TYPE_ENEMY:
         removeEnemyinVector((Enemy*)nextSpotptr);
         gameGrid1.setEmplty(inBullet.x(), inBullet.y() + (1 - (2 * inBullet.getWay())), false);
-        return false;
+        removeBullet(NULL, &inBullet);
+        return true;
     case TYPE_PROJECTILE:
         removeBullet(NULL,(Bullet*)nextSpotptr);
         removeBullet(NULL, &inBullet);
         return true;
+    case TYPE_PLAYER:
+        if (!player1.reciveDamage()) {
+            gameOver = true;
+        }
+        removeBullet(NULL, &inBullet);
     }
-    //if (inBullet.getWay()) {
-    //    
-    //    
-
-    //    else if (gameGrid1.checkGrid(inBullet.x(), inBullet.y()-1) == nullptr) {
-    //        gameGrid1.moveEntity(&inBullet, 0, -1);
-    //        return true;
-    //    }
-    //    else if(gameGrid1.checkGrid(inBullet.x(), inBullet.y() - 1)->getType() == "enemy") {
-    //        //(Enemy*) gameGrid1.checkGrid(inBullet.x(), inBullet.y() - 1);
-    //        removeEnemyinVector((Enemy*)(gameGrid1.checkGrid(inBullet.x(), inBullet.y() - 1)));
-    //        gameGrid1.setEmplty(inBullet.x(), inBullet.y() - 1,false);
-    //        return false;
-    //    }
-    //}
-    //else
-    //{
-    //    if (inBullet.y() == grandeurGrid - 1) { // bullet touche au bas
-    //        return false;
-    //    }
-    //    else if (gameGrid1.checkGrid(inBullet.x(), inBullet.y() + 1) == nullptr) {
-    //        gameGrid1.moveEntity(&inBullet, 0, +1);
-    //        return true;
-    //    }
-    //}
 }
 
 void Game::updateAllBullets()
@@ -296,10 +293,15 @@ void Game::enemyAttack(int ajustValue)
 
 void Game::removeBullet(int index, Bullet* inbullet)
 {
+    if (inbullet == recentBullet) {
+        playerAlowedtoShoot = true;
+    }
+
     if (inbullet != nullptr) {
         for (int i = 0; i < liveBullets.size(); i++) {
             if (liveBullets[i] == inbullet) {
                 index = i;
+               
                 break;
             }
         }

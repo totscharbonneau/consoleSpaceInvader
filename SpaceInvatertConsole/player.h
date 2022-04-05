@@ -12,6 +12,5 @@ public:
 	bool reciveDamage();
 private:
 	int hitPoints;
-
 };
 #endif // !PLAYER_H
