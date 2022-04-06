@@ -10,7 +10,10 @@ public:
 	Player();
 	Bullet* shoot();
 	bool reciveDamage();
+	int Score();
+	void Score(int inPoints);
 private:
 	int hitPoints;
+	int scorePoints;
 };
 #endif // !PLAYER_H

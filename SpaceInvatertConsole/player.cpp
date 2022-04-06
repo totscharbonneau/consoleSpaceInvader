@@ -6,6 +6,7 @@ Player::Player()
 	setCoords(19, 38);
 	type = "player";
 	hitPoints = 3;
+	scorePoints = 0;
 }
 
 Bullet* Player::shoot()
@@ -21,3 +22,15 @@ bool Player::reciveDamage()
 	}
 	return true;
 };
+
+// fonction pour retourner le nombre de points
+
+int Player::Score() {
+	return scorePoints;
+}
+
+// fonction pour modifier le nombre de points
+
+void Player::Score(int inPoints) {
+	scorePoints += inPoints;
+}

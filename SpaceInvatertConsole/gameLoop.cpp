@@ -109,6 +109,7 @@ void Game::mainGameLoop(int lvl)
     else {
         std::cout << "Victoire" << std::endl;
     }
+    std::cout << "Score : " << player1.Score() << std::endl;
 }
 
 void Game::ClearScreen()
@@ -173,6 +174,7 @@ bool Game::updateBullet(Bullet& inBullet)
         removeEnemyinVector((Enemy*)nextSpotptr);
         gameGrid1.setEmplty(inBullet.x(), inBullet.y() + (1 - (2 * inBullet.getWay())), false);
         removeBullet(NULL, &inBullet);
+        player1.Score(100);
         return true;
     case TYPE_PROJECTILE:
         removeBullet(NULL,(Bullet*)nextSpotptr);
@@ -183,9 +185,11 @@ bool Game::updateBullet(Bullet& inBullet)
             gameOver = true;
         }
         removeBullet(NULL, &inBullet);
+        return true;
     case TYPE_SHIELD:
         gameGrid1.setEmplty(inBullet.x(), inBullet.y() + (1 - (2 * inBullet.getWay())), false);
         removeBullet(NULL, &inBullet);
+        return true;
     }
 
 }
