@@ -30,7 +30,6 @@ char Entity::getSymbol()
 
 void Entity::move(int deltaX, int deltaY)
 {
-	
 	if ((coords.x + deltaX) < 0) {
 		coords.x = 0;
 	}

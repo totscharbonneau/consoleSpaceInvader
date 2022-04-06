@@ -12,8 +12,8 @@ public:
 	bool reciveDamage();
 	int Score();
 	void Score(int inPoints);
-private:
 	int hitPoints;
+private:
 	int scorePoints;
 };
 #endif // !PLAYER_H

@@ -1,6 +1,6 @@
-#include "gameLoop.h"
+﻿#include "gameLoop.h"
 
-
+SerialPort* arduino;
 
 Game::Game()
 {
@@ -9,7 +9,77 @@ Game::Game()
     dirEnemy = true;
     playerAlowedtoShoot = true;
     gameOver = false;
-    logicRate = 0.153f;
+    logicRate = 1.0f;
+    initCom();
+}
+
+void Game::initCom()
+{
+    // Initialisation du port de communication
+    cout << "Arduino COM Port: ";
+    cin >> com;
+    arduino = new SerialPort(com.c_str(), BAUD);
+
+    if (!arduino->isConnected())
+    {
+        cerr << "Impossible de se connecter au port " << string(com) << ". Fermeture du programme!" << endl;
+        //exit(1);
+    }
+    if (!RcvFromSerial(arduino, raw_msg))
+    {
+        cerr << "Erreur lors de la reception du message. " << endl;
+    }
+}
+
+void Game::requestInputs()
+{
+    if (arduino->isConnected())
+    {
+        if (!SendToSerial(arduino, j_msg_send))
+        {    //Envoie au Arduino
+            cerr << "Erreur lors de l'envoie du message. " << endl;
+        }
+
+        // Reception message Arduino
+        j_msg_rcv.clear(); // effacer le message precedent
+        if (!RcvFromSerial(arduino, raw_msg))
+        {
+            cerr << "Erreur lors de la reception du message. " << endl;
+        }
+
+        // Impression du message de l'Arduino, si valide
+        if (raw_msg.size() > 0)
+        {
+            try
+            {
+                j_msg_rcv = json::parse(raw_msg); // Conversion du message en json
+            }
+            catch (const std::exception& e)
+            {
+                //cout << "" << endl;
+            }
+            if (j_msg_rcv.contains("Joy_X"))
+                m_joystick.X = j_msg_rcv["Joy_X"];
+            if (j_msg_rcv.contains("Joy_Y"))
+                m_joystick.Y = j_msg_rcv["Joy_Y"];
+            if (j_msg_rcv.contains("Acc_X"))
+                m_accel.X = j_msg_rcv["Acc_X"];
+            if (j_msg_rcv.contains("Acc_Y"))
+                m_accel.Y = j_msg_rcv["Acc_Y"];
+            if (j_msg_rcv.contains("Acc_Z"))
+                m_accel.Z = j_msg_rcv["Acc_Z"];
+            if (j_msg_rcv.contains("pot_Value"))
+                m_Game_Speed = -0.000478*j_msg_rcv["pot_Value"]+0.5;
+            if (j_msg_rcv.contains("btn_Value"))
+                getButtonValues(j_msg_rcv["btn_Value"]);
+            j_msg_send["PDV"] = (-1 * ((((player1.hitPoints) * 1023) / 10)) + 1023);  //Valeur de vie a afficher - Pot Value instead as of now  
+        }
+
+        // Bloquer le fil pour environ 25 msec
+        Sleep(25); // 25ms
+    }
+    //else
+        //initCom();  //Si arduino n'est plus connect�, refait le setup (choose com)
 }
 
 void Game::mainGameLoop(int lvl)
@@ -30,13 +100,15 @@ void Game::mainGameLoop(int lvl)
     addShield(24, 33, 3, 2);
     addShield(33, 33, 3, 2);
 
+    m_joystick.X = 593;
+    m_joystick.Y = 509;
     Timer* timerupdatelogic = Timer::Instance();
 
     while (value != KEY_X) {
         
         timerupdatelogic->Tick();
 
-         if (timerupdatelogic->DeltaTime() >= logicRate) {
+         if (timerupdatelogic->DeltaTime() >= m_Game_Speed) {
             timerupdatelogic->reset();
             updateAllBullets();
 
@@ -51,12 +123,71 @@ void Game::mainGameLoop(int lvl)
             b++;
             battack++;
         }
-
+         requestInputs();
         if (allDead()) {
             break;
         }
         if (gameOver) {
             break;
+        }
+        if (m_Btn_States[0] == 1)
+        {
+            //X pressed
+            if (playerAlowedtoShoot) {
+                recentBullet = player1.shoot();
+                liveBullets.push_back(recentBullet);
+                gameGrid1.addEntity(liveBullets.back());
+                playerAlowedtoShoot = false;
+            }
+            m_Btn_States[0] = 0;    //Reset le bouton pour pas trigger plus dune fois
+        }
+        if (m_Btn_States[1] == 1)
+        {
+            //Y pressed
+            m_Btn_States[1] = 0;
+        }
+        if (m_Btn_States[2] == 1)
+        {
+            //B pressed
+            if (m_joystick.X <= 593 - THRESHOLD) {
+                gameGrid1.moveEntity(&player1, 1, 0);
+                gameGrid1.moveEntity(&player1, 1, 0);
+                gameGrid1.moveEntity(&player1, 1, 0);
+            }
+            else if (m_joystick.X >= 593 + THRESHOLD) {
+                gameGrid1.moveEntity(&player1, -1, 0);
+                gameGrid1.moveEntity(&player1, -1, 0);
+                gameGrid1.moveEntity(&player1, -1, 0);
+            }
+
+            m_Btn_States[2] = 0;
+        }
+        if (m_Btn_States[3] == 1)
+        {
+            //A pressed
+            m_Btn_States[3] = 0;
+        }
+        if (m_Btn_States[4] == 1)
+        {
+            //Start pressed
+            value = KEY_X;
+            m_Btn_States[4] = 0;
+        }
+        if (m_joystick.X <= 593 - THRESHOLD)
+        {
+            gameGrid1.moveEntity(&player1, 1, 0);
+        }
+        else if (m_joystick.X >= 593 + THRESHOLD)
+        {
+            gameGrid1.moveEntity(&player1, -1, 0);
+        }
+        if (m_joystick.Y <= 507 - THRESHOLD)
+        {
+            gameGrid1.moveEntity(&player1, 0, -1);
+        }
+        else if (m_joystick.Y >= 507 + THRESHOLD)
+        {
+            gameGrid1.moveEntity(&player1, 0, 1);
         }
         if (_kbhit()) {
             key = _getch();
@@ -64,11 +195,13 @@ void Game::mainGameLoop(int lvl)
             switch (value) {
 
             case KEY_UP:
-                gameGrid1.moveEntity(&player1, 0, -1);
+                
+                //gameGrid1.moveEntity(&player1, 0, -1);
+            
                 //std::cout << "up" << std::endl;
                 break;
             case KEY_DOWN:
-                gameGrid1.moveEntity(&player1, 0, 1);
+                //gameGrid1.moveEntity(&player1, 0, 1);
                 //std::cout << "down" << std::endl;
                 break;
             case KEY_LEFT:
@@ -100,9 +233,8 @@ void Game::mainGameLoop(int lvl)
         }
         updaterender();
     }
-    ClearScreen();
-    //trender.stop();
-    //tupdate.stop();
+    requestInputs();
+    //ClearScreen();
     if (gameOver) {
         std::cout << "Game Over" << std::endl;
     }
@@ -201,7 +333,7 @@ void Game::updateAllBullets()
             removeBullet(i);
         }
     }
-} 
+}
 
 void Game::addEnemies()
 {
@@ -351,5 +483,54 @@ void Game::addShield(int inX, int inY, int length, int hight)
     }
 }
 
+void Game::getButtonValues(int btnRegister)
+{
+    string btnNames[5] = { "X","Y","B","A","START" };
 
+    for (int i = 0; i < 5; i++)
+    {
+        if ((btnRegister & (1 << i)) > 0)
+        {
+            m_Btn_States[i] = 1;
+            //cout << "Bouton " << btnNames[i] << " was pressed." << endl;
+        }
+        else
+            m_Btn_States[i] = 0;
+    }
+}
 
+bool Game::SendToSerial(SerialPort* arduino, json j_msg)
+{
+    // Return 0 if error
+    string msg = j_msg.dump();
+    bool ret = arduino->writeSerialPort(msg.c_str(), msg.length());
+    return ret;
+}
+
+bool Game::RcvFromSerial(SerialPort* arduino, string& msg) {
+    // Return 0 if error
+    // Message output in msg
+    string str_Buffer;
+    char char_Buffer[MSG_MAX_SIZE];
+    int buffer_Size;
+
+    msg.clear(); // clear string
+    /*
+    while (msg.back() != '\n') // Read serialport until '\n' character (Blocking)
+    {
+        if (msg.size() > MSG_MAX_SIZE) {
+            return false;
+        }
+
+        buffer_size = arduino->readSerialPort(char_buffer, MSG_MAX_SIZE);
+        str_buffer.assign(char_buffer, buffer_size);
+        msg.append(str_buffer);
+    }
+    msg.pop_back(); //remove '/n' from string
+    */
+    buffer_Size = arduino->readSerialPort(char_Buffer, MSG_MAX_SIZE);
+    str_Buffer.assign(char_Buffer, buffer_Size);
+    msg.append(str_Buffer);
+
+    return true;
+}

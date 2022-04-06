@@ -5,7 +5,7 @@ Player::Player()
 	symbol = 'U';
 	setCoords(19, 38);
 	type = "player";
-	hitPoints = 3;
+	hitPoints = 10;
 	scorePoints = 0;
 }
 
